@@ -89,6 +89,7 @@ class _SchemingMixin(object):
             'scheming_get_presets': helpers.scheming_get_presets,
             'scheming_get_preset': helpers.scheming_get_preset,
             'scheming_get_schema': helpers.scheming_get_schema,
+            'scheming_flatten_extras': helpers.scheming_flatten_extras
             }
 
     def get_validators(self):
@@ -241,6 +242,11 @@ class SchemingDatasetsPlugin(p.SingletonPlugin, DefaultDatasetForm,
                 scheming_schema,
                 f['field_name'] not in schema
             )
+
+        if 'extras' in data_dict:
+            for i, e in enumerate(data_dict['extras']):
+                if data_dict['extras'][i]['key'] in data_dict:
+                    del data_dict['extras'][i]
 
         resource_schema = schema['resources']
         for f in scheming_schema.get('resource_fields', []):

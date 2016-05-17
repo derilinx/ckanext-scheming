@@ -2,6 +2,11 @@ from ckan.lib.helpers import lang
 from pylons import config
 from pylons.i18n import gettext
 
+def scheming_flatten_extras(extras):
+    flat = {}
+    for extra in extras:
+        flat[extra['key']] = extra['value']
+    return flat
 
 def scheming_language_text(text, prefer_lang=None):
     """

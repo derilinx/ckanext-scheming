@@ -17,11 +17,20 @@
     </p>
   {%- endif -%}
   {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
+  {%- set flat = h.scheming_flatten_extras(data['extras']) -%}
+
   {%- for field in schema.dataset_fields -%}
     {%- if field.form_snippet is not none -%}
-      {%- snippet 'scheming/snippets/form_field.html',
-        field=field, data=data, errors=errors, licenses=c.licenses,
-        entity_type='dataset', object_type=dataset_type -%}
+      {%- if field.field_name in flat -%}
+        {%- snippet 'scheming/snippets/form_field.html',
+          field=field, data=flat, errors=errors, licenses=c.licenses,
+          entity_type='dataset', object_type=dataset_type -%}
+        {%- endif -%}
+      {%- if field.field_name not in flat -%}
+        {%- snippet 'scheming/snippets/form_field.html',
+          field=field, data=data, errors=errors, licenses=c.licenses,
+          entity_type='dataset', object_type=dataset_type -%}
+      {%- endif -%}
     {%- endif -%}
   {%- endfor -%}
   {%- if 'resource_fields' not in schema -%}
@@ -31,4 +40,9 @@
 {% endblock %}
 
 {% block metadata_fields %}
+{% block package_metadata_fields_custom %}
+    {% block custom_fields %}
+      {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
+    {% endblock %}
+  {% endblock %}
 {% endblock %}
