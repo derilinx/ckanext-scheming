@@ -71,9 +71,11 @@ class _SchemingMixin(object):
     _validators_loaded = False
 
     def get_helpers(self):
-        if _SchemingMixin._helpers_loaded:
+        import ckan.lib.helpers
+        if 'scheming_get_dataset_schema' in ckan.lib.helpers.helper_functions:
+            log.debug('Scheming helpers already installed')
             return {}
-        _SchemingMixin._helpers_loaded = True
+        log.debug('Installing scheming helpers')
         return {
             'scheming_language_text': helpers.scheming_language_text,
             'scheming_choices_label': helpers.scheming_choices_label,
