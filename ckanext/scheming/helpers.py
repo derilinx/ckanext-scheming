@@ -12,7 +12,7 @@ def scheming_language_text(text, prefer_lang=None):
     languag in dict or using gettext if not a dict
     """
     if not text:
-        return u''
+        return ''
 
     if hasattr(text, 'get'):
         try:

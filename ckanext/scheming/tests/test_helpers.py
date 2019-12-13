@@ -33,7 +33,7 @@ class TestLanguageText(object):
             prefer_lang='en'))
 
     def test_decodes_utf8(self):
-        assert_equals(u'\xa1Hola!', scheming_language_text('\xc2\xa1Hola!'))
+        assert_equals('\xa1Hola!', scheming_language_text('\xc2\xa1Hola!'))
 
     @patch('ckanext.scheming.helpers.lang')
     def test_no_user_lang(self, lang):
@@ -62,23 +62,23 @@ class TestGetPreset(object):
     def test_scheming_get_presets(self):
         presets = scheming_get_presets()
         assert_equals(sorted((
-            u'title',
-            u'tag_string_autocomplete',
-            u'select',
-            u'resource_url_upload',
-            u'resource_format_autocomplete',
-            u'multiple_select',
-            u'multiple_checkbox',
-            u'date',
-            u'datetime',
-            u'dataset_slug',
-            u'dataset_organization'
-        )), sorted(presets.iterkeys()))
+            'title',
+            'tag_string_autocomplete',
+            'select',
+            'resource_url_upload',
+            'resource_format_autocomplete',
+            'multiple_select',
+            'multiple_checkbox',
+            'date',
+            'datetime',
+            'dataset_slug',
+            'dataset_organization'
+        )), sorted(presets.keys()))
 
     def test_scheming_get_preset(self):
-        preset = scheming_get_preset(u'date')
+        preset = scheming_get_preset('date')
         assert_equals(sorted((
-            (u'display_snippet', u'date.html'),
-            (u'form_snippet', u'date.html'),
-            (u'validators', u'scheming_required isodate convert_to_json_if_date')
-        )), sorted(preset.iteritems()))
+            ('display_snippet', 'date.html'),
+            ('form_snippet', 'date.html'),
+            ('validators', 'scheming_required isodate convert_to_json_if_date')
+        )), sorted(preset.items()))

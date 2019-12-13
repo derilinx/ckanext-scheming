@@ -64,7 +64,7 @@ def scheming_multiple_choice(field, schema):
 
         value = data[key]
         if value is not missing:
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = [value]
             elif not isinstance(value, list):
                 errors[key].append(_('expecting list of strings'))
@@ -102,7 +102,7 @@ def scheming_isodatetime(field, schema):
         if value is not missing:
             try:
                  date = h.date_str_to_datetime(value)
-            except (TypeError, ValueError), e:
+            except (TypeError, ValueError) as e:
                 raise Invalid(date_error)
         else:
             extras = data.get(('__extras',))
@@ -130,7 +130,7 @@ def scheming_isodatetime(field, schema):
                     try:
                         value_full = value
                         date = h.date_str_to_datetime(value)
-                    except (TypeError, ValueError), e:
+                    except (TypeError, ValueError) as e:
                         return errors[date_key].append(date_error)
 
                 time_key, value = get_input('time')
@@ -141,7 +141,7 @@ def scheming_isodatetime(field, schema):
                     try:
                         value_full += ' ' + value
                         date = h.date_str_to_datetime(value_full)
-                    except (TypeError, ValueError), e:
+                    except (TypeError, ValueError) as e:
                         return errors[time_key].append(time_error)
 
         data[key] = date
@@ -187,7 +187,7 @@ def get_validator_or_converter(name):
     Get a validator or converter by name
     """
     if name == 'unicode':
-        return unicode
+        return str
     try:
         v = get_validator(name)
         return v

@@ -355,11 +355,11 @@ def _load_schema_module_path(url):
 
 
 def _load_schema_url(url):
-    import urllib2
+    import urllib.request, urllib.error, urllib.parse
     try:
-        res = urllib2.urlopen(url)
+        res = urllib.request.urlopen(url)
         tables = res.read()
-    except urllib2.URLError:
+    except urllib.error.URLError:
         raise SchemingException("Could not load %s" % url)
 
     return loader.loads(tables, url)
@@ -402,9 +402,9 @@ def _field_validators(f, schema, convert_extras):
     if 'validators' in f:
         validators = validators_from_string(f['validators'], f, schema)
     elif helpers.scheming_field_required(f):
-        validators = [not_empty, unicode]
+        validators = [not_empty, str]
     else:
-        validators = [ignore_missing, unicode]
+        validators = [ignore_missing, str]
 
     if convert_extras:
         validators = validators + [convert_to_extras]
@@ -445,7 +445,7 @@ def _expand_schemas(schemas):
     Return a new dict of schemas with all field presets expanded.
     """
     out = {}
-    for name, original in schemas.iteritems():
+    for name, original in schemas.items():
         s = dict(original)
         for fname in ('fields', 'dataset_fields', 'resource_fields'):
             if fname not in s:
