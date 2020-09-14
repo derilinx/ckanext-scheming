@@ -25,7 +25,12 @@ setup(
     namespace_packages=['ckanext'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=[],
+    install_requires=[
+        'ckanapi',
+        'ckantoolkit>=0.0.2',
+        'pytz',
+        'six',
+    ],
     entry_points=\
     """
     [ckan.plugins]
