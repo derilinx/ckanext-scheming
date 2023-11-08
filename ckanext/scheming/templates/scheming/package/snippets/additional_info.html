@@ -9,11 +9,12 @@
     'license_id',
     'owner_org',
     'state',
+    'number_times_requested',
     'visibility'
     ] -%}
 
 {%- if pkg_dict.type == 'api_record' -%}
-    {%- set exclude_fields = exclude_fields + ['url', 'number_times_requested'] -%}
+    {%- set exclude_fields = exclude_fields + ['url'] -%}
     {%- if "visibility" not in pkg_dict -%}
       {%- set exclude_fields = exclude_fields | reject('equalto', 'visibility') | list %}
     {%- endif -%}
@@ -44,9 +45,5 @@
     </tr>
   {% endif %}
   
-  <tr>
-    <th scope="row" class="dataset-label">{{ _("Email") }}</th>
-    <td class="dataset-details">{{ _(pkg_dict.maintainer_email) }}</td>
-  </tr>
 #}
 {% endblock %}
