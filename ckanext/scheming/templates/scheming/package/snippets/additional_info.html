@@ -20,6 +20,10 @@
     {%- endif -%}
 {%- endif -%}
 
+{%- if pkg_dict.is_protected != 'true' -%}
+  {%- set exclude_fields = exclude_fields + ['is_protected', 'conditions', 'protected_contact_email', 'access_rights', 'eircode'] -%}
+{%- endif -%}
+
 {% block package_additional_info %}
   {%- for field in schema.dataset_fields -%}
     {%- if field.field_name not in exclude_fields
