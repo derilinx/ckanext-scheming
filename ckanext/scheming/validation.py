@@ -220,7 +220,7 @@ def scheming_isodatetime(field, schema):
                 return value
             else:
                 try:
-                    date = h.date_str_to_datetime(value)
+                    date = datetime.datetime.fromisoformat(value)
                 except (TypeError, ValueError) as e:
                     raise Invalid(_('Date format incorrect'))
         else:
