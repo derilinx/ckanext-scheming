@@ -41,6 +41,7 @@ from ckanext.scheming.errors import SchemingException
 
 ignore_missing = get_validator('ignore_missing')
 not_empty = get_validator('not_empty')
+unicode_safe = get_validator('unicode_safe')
 convert_to_extras = get_converter('convert_to_extras')
 convert_from_extras = get_converter('convert_from_extras')
 
