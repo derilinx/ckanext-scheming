@@ -1,19 +1,23 @@
 {% extends "package/snippets/additional_info.html" %}
 
-{%- set exclude_fields = [
+{%-
+set exclude_fields = [
     'id',
+    'title_translated',
     'title',
     'name',
     'notes',
+    'notes_translated',
     'tag_string',
     'license_id',
-    'owner_org',
-    ] -%}
+    'owner_org'
+]
+-%}
 
 {% block package_additional_info %}
   {%- for field in schema.dataset_fields -%}
-    {%- if field.field_name not in exclude_fields
-        and field.display_snippet is not none -%}
+    {%- if field.field_name not in exclude_fields and field.display_snippet is not none
+           and pkg_dict[field.field_name] is not none and pkg_dict[field.field_name] -%}
       <tr>
         <th scope="row" class="dataset-label">{{
           h.scheming_language_text(field.label) }}</th>
