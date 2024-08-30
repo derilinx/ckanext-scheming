@@ -1,14 +1,18 @@
 {% extends "package/snippets/additional_info.html" %}
 
-{%- set exclude_fields = [
+{%-
+set exclude_fields = [
     'id',
+    'title_translated',
     'title',
     'name',
     'notes',
+    'notes_translated',
     'tag_string',
     'license_id',
-    'owner_org',
-    ] -%}
+    'owner_org'
+]
+-%}
 
 
 {% block package_additional_info %}
