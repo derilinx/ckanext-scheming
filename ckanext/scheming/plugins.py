@@ -438,6 +438,15 @@ class SchemingGroupsPlugin(p.SingletonPlugin, _GroupOrganizationMixin,
             'scheming_group_schema_show': logic.scheming_group_schema_show,
         }
 
+    def setup_template_variables(self, context, data_dict):
+        super(SchemingGroupsPlugin, self).setup_template_variables(
+            context, data_dict)
+        # do not override licenses if they were already added by some
+        # other extension. We just want to make sure, that licenses
+        # are not empty.
+        if not hasattr(c, 'licenses'):
+            c.licenses = [('', '')] + model.Package.get_license_options()
+
 
 class SchemingOrganizationsPlugin(p.SingletonPlugin, _GroupOrganizationMixin,
                                   DefaultOrganizationForm, _SchemingMixin):
