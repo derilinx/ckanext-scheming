@@ -15,10 +15,19 @@
     {{ h.csrf_input() if 'csrf_input' in h }}
     {%- set schema = h.scheming_get_organization_schema(group_type) -%}
     {%- for field in schema['fields'] -%}
+        {% set visibility = field.visibility or 'admin'%}
         {%- if field.form_snippet is not none -%}
-          {%- snippet 'scheming/snippets/form_field.html',
-          field=field, data=data, errors=errors, licenses=licenses,
-          entity_type='organization', object_type=group_type -%}
+          {% if visibility == 'sysadmin' and not g.userobj.sysadmin %}
+            {% set name = field.field_name %}
+            <div class="form-group control-medium control-select">
+              <label class="control-label" for="field-{{ name }}">{{ field.label }}</label>
+              <input id="field-{{ name }}" name="{{ name }}" type="text" value="{{ data[name] }}" disabled="True" class="form-control">
+            </div>
+          {% else %}
+            {%- snippet 'scheming/snippets/form_field.html',
+            field=field, data=data, errors=errors, licenses=licenses,
+            entity_type='organization', object_type=group_type -%}
+          {% endif %}
         {%- endif -%}
     {%- endfor -%}
 
