@@ -18,11 +18,7 @@
         {% set visibility = field.visibility or 'admin'%}
         {%- if field.form_snippet is not none -%}
           {% if visibility == 'sysadmin' and not g.userobj.sysadmin %}
-            {% set name = field.field_name %}
-            <div class="form-group control-medium control-select">
-              <label class="control-label" for="field-{{ name }}">{{ field.label }}</label>
-              <input id="field-{{ name }}" name="{{ name }}" type="text" value="{{ data[name] }}" disabled="True" class="form-control">
-            </div>
+            {# Don't show field at all if only sysadmins should view it #}
           {% else %}
             {%- snippet 'scheming/snippets/form_field.html',
             field=field, data=data, errors=errors, licenses=licenses,
