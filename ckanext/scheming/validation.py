@@ -17,7 +17,9 @@ from ckantoolkit import (
     _,
     unicode_safe,
 )
-
+from typing import Any
+from ckan.types import (
+    FlattenDataDict, FlattenKey, Context, FlattenErrorDict)
 import ckanext.scheming.helpers as sh
 from ckanext.scheming.errors import SchemingException
 
@@ -482,3 +484,31 @@ def repeating_text_output(value):
         return json.loads(value)
     except ValueError:
         return [value]
+
+
+@register_validator
+def data_service_owner_org_validator(key: FlattenKey, data: FlattenDataDict,
+                        errors: FlattenErrorDict, context: Context) -> Any:
+    """Validate organization for the dataset.
+
+    Depending on the settings and user's permissions, this validator checks
+    whether organization is optional and ensures that specified organization
+    can be set as an owner of dataset.
+
+    """
+    value = data.get(key)
+    if value is missing or value is None:
+        data.pop(key, None)
+        raise StopOnError
+
+    model = context['model']
+
+    if value == '':
+        raise Invalid(_('An organization must be provided'))
+
+    group = model.Group.get(value)
+    if not group:
+        raise Invalid(_('Organization does not exist'))
+    group_id = group.id
+
+    data[key] = group_id
