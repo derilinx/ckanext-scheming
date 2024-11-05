@@ -1,0 +1,19 @@
+{# To use with other form fields except datasets' owner_org field #}
+
+{% macro organization_option_tag(organization, selected_org) %}
+  {% block organization_option scoped %}
+    <option value="{{ organization.id }}"{%
+      if selected_org %} selected="selected"{% endif
+      %}>{{ organization.display_name }}</option>
+  {% endblock %}
+{% endmacro %}
+
+  <div data-module="dataset-visibility">
+  {% snippet "scheming/form_snippets/_organization_select.html",
+    field=field,
+    data=data,
+    errors=errors,
+    organizations_available=h.organizations_available('create_dataset'),
+    org_required=True,
+    organization_option_tag=organization_option_tag %}
+  </div>
