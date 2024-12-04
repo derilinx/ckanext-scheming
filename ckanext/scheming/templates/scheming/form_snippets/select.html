@@ -21,7 +21,7 @@
 {%- elif field.default is defined -%}
   {%- set option_selected = field.default|string -%}
 {%- else -%}
-  {%- set option_selected = None -%}
+  {%- set option_selected = field.default|string or None -%}
 {%- endif -%}
 
 {% call form.select(
