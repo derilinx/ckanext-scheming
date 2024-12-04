@@ -19,7 +19,7 @@
 {%- if data[field.field_name] -%}
   {%- set option_selected = data[field.field_name]|string -%}
 {%- else -%}
-  {%- set option_selected = None -%}
+  {%- set option_selected = field.default|string or None -%}
 {%- endif -%}
 
 {% call form.select(
