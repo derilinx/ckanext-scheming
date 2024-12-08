@@ -17,9 +17,6 @@ from ckan.plugins.toolkit import (
     StopOnError,
     _,
 )
-from typing import Any
-from ckan.types import (
-    FlattenDataDict, FlattenKey, Context, FlattenErrorDict)
 import ckanext.scheming.helpers as sh
 from ckanext.scheming.errors import SchemingException
 
@@ -522,8 +519,7 @@ def repeating_text_output(value):
 
 
 @register_validator
-def data_service_owner_org_validator(key: FlattenKey, data: FlattenDataDict,
-                        errors: FlattenErrorDict, context: Context) -> Any:
+def data_service_owner_org_validator(key, data, errors, context):
     """Validate organization for the dataset.
 
     Depending on the settings and user's permissions, this validator checks
