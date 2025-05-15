@@ -10,47 +10,48 @@
     <div class="col-md-12">
         <h2>{{ h.get_translated(group_dict, 'title') }}</h2>
         <p style="text-align:justify">{{ h.markdown_extract(h.get_translated(group_dict, 'notes'), extract_length=8000) }}</p>
-
-       {# <div class="d-flex group-keyword-parent gap-3">
-            <h5>KEYWORDS:</h5>
-            <div class="d-flex gap-3">
-                {% if group_dict["keywords"] %}
-                {% for item in group_dict["keywords"] %}
-                <p class="group-keywords">{{ item }}</p>
-                {% endfor %}
-                {% endif %}
-            </div> #}
+        
         </div>
     </div>
 </div>
-
-<div class="row group-details">
-    {% for f in c.scheming_fields %}
-    {% if f.field_name not in ['title', 'notes', 'keywords', 'title_translated', 'notes_translated', 'name'] and group_dict[f.field_name] %}
-    <div class="col-md-6 col-sm-12">
-        <h3>{{ _(h.scheming_language_text(f.label)) }}</h3>
-        {% if '_translated' not in f.field_name and group_dict[f.field_name] is iterable and group_dict[f.field_name] is not string %}
-            {% for item in group_dict[f.field_name] %}
-                {% if 'http' in item %}
-                    <a href="{{ item }}">{{ item }}</a>
-                {% else %}
-                    <p>{{ _(item) }}</p>
-                {% endif %}
-            {% endfor %}
-        {% elif f.field_name == 'publisher' %}
-            {% set organization = h.get_organization(group_dict[f.field_name]) %}
-            <p>{% link_for organization.display_name|truncate(35), named_route=organization.type+'.read', id=organization.name, title=organization.display_name %}</p>
-        {% elif '_translated' in f.field_name %}
-            {{ h.link_to(h.scheming_language_text(group_dict[f.field_name]),
-                url=h.scheming_language_text(group_dict[f.field_name]),
-                rel=f.display_property,
-                target='_blank',
-                **f.get('display_attributes', {}) )}}
-        {% else %}
-            {%- snippet 'scheming/snippets/display_field.html', field=f, data=group_dict, schema=schema -%}
-        {% endif %}
-    </div>
-    {% endif %}
+{% set fields_to_show = [] %}
+{% for f in c.scheming_fields %}
+  {% if f.field_name not in ['title', 'notes', 'keywords', 'title_translated', 'notes_translated', 'name'] and group_dict[f.field_name] %}
+    {% do fields_to_show.append(f) %}
+  {% endif %}
 {% endfor %}
-</div>
+
+{% for i in range(0, fields_to_show | length, 2) %}
+  <div class="row group-details">
+    {% for j in [0, 1] %}
+      {% set index = i + j %}
+      {% if index < fields_to_show | length %}
+        {% set f = fields_to_show[index] %}
+        <div class="col-md-6 col-sm-12">
+            <h3>{{ _(h.scheming_language_text(f.label)) }}</h3>
+            {% if '_translated' not in f.field_name and group_dict[f.field_name] is iterable and group_dict[f.field_name] is not string %}
+                {% for item in group_dict[f.field_name] %}
+                    {% if 'http' in item %}
+                        <a href="{{ item }}">{{ item }}</a>
+                    {% else %}
+                        <p>{{ _(item) }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% elif f.field_name == 'publisher' %}
+                {% set organization = h.get_organization(group_dict[f.field_name]) %}
+                <p>{% link_for organization.display_name|truncate(35), named_route=organization.type+'.read', id=organization.name, title=organization.display_name %}</p>
+            {% elif '_translated' in f.field_name %}
+                {{ h.link_to(h.scheming_language_text(group_dict[f.field_name]),
+                    url=h.scheming_language_text(group_dict[f.field_name]),
+                    rel=f.display_property,
+                    target='_blank',
+                    **f.get('display_attributes', {}) )}}
+            {% else %}
+                {%- snippet 'scheming/snippets/display_field.html', field=f, data=group_dict, schema=schema -%}
+            {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endfor %}
 {% endblock %}
