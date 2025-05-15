@@ -9,7 +9,7 @@
 <div class="row group-about-header">
     <div class="col-md-12">
         <h2>{{ h.get_translated(group_dict, 'title') }}</h2>
-        <p>{{ h.markdown_extract(h.get_translated(group_dict, 'notes'), extract_length=8000) }}</p>
+        <p style="text-align:justify">{{ h.markdown_extract(h.get_translated(group_dict, 'notes'), extract_length=8000) }}</p>
 
        {# <div class="d-flex group-keyword-parent gap-3">
             <h5>KEYWORDS:</h5>
