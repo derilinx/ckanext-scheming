@@ -21,6 +21,7 @@
   {% endif %}
 {% endfor %}
 
+<div class="container">
 {% for i in range(0, fields_to_show | length, 2) %}
   <div class="row group-details">
     {% for j in [0, 1] %}
@@ -54,4 +55,5 @@
     {% endfor %}
   </div>
 {% endfor %}
+    </div>
 {% endblock %}
