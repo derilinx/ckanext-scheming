@@ -534,3 +534,16 @@ def repeating_text_output(value):
         return json.loads(value)
     except ValueError:
         return [value]
+
+@scheming_validator
+@register_validator
+def repeating_subfields_singular(field):
+    def _repeating_subfields_singular(key, data, errors, context):
+        indexes = {}
+        for key in data.keys():
+            if key[::2] == field:
+                indexes.setdefault(key[:-1]).add(key[-1])
+
+        for (key, values) in indexes.items():
+            if len(values) > 1:
+                errors.setdefault(key, []).append(_('Too many values'))

@@ -8,10 +8,12 @@
     <div class="panel panel-default">
       {% block repeating_panel_header %}
         <header class="panel-heading">
+          {% if 'singular' not in field or not field.singular %}
           {% block field_removal_button%}
             <a class="btn btn-danger btn-repeating-remove" name="{{ field.field_name }}-repeating-remove" href="javascript:;"
               >{% block delete_button_text %}{{ _('Remove') }}{% endblock %}</a>
           {% endblock %}
+          {% endif %}
           {{ h.scheming_language_text(field.repeating_label or field.label) }} {{ index1 }}
         </header>
       {% endblock %}
@@ -74,8 +76,10 @@
           {% endfor %}
         </div>
         <div class="control-medium">
+          {% if 'singular' not in field or not field.singular %}
           {% block add_button %}<a href="javascript:;" name="{{ field.field_name }}-repeating-add" class="btn btn-link"
             >{% block add_button_text %}<i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}{% endblock %}</a>{% endblock %}
+          {% endif %}
 
           {%- snippet 'scheming/form_snippets/help_text.html', field=field -%}
         </div>

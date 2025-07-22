@@ -604,7 +604,7 @@ def _field_output_validators(f, schema, convert_extras,
     return validators
 
 
-def _field_validators(f, schema, convert_extras):
+def _field_validators(f, schema, convert_extras, field_path=()):
     """
     Return the validators for a scheming field f
     """
@@ -625,15 +625,17 @@ def _field_validators(f, schema, convert_extras):
     # If this field contains children, we need a special validator to handle
     # them.
     if 'repeating_subfields' in f:
+        if f.get('singular'):
+            schema.setdefault('__before', []).append(validation.repeating_subfields_singular((*field_path, f['field_name'])))
         validators = {
-            sf['field_name']: _field_validators(sf, schema, False)
+            sf['field_name']: _field_validators(sf, schema, False, field_path=(*field_path, f['field_name']))
             for sf in f['repeating_subfields']
         }
 
     return validators
 
 
-def _field_create_validators(f, schema, convert_extras):
+def _field_create_validators(f, schema, convert_extras, field_path=()):
     """
     Return the validators to use when creating for scheming field f,
     normally the same as the validators used for updating
@@ -653,8 +655,10 @@ def _field_create_validators(f, schema, convert_extras):
     # If this field contains children, we need a special validator to handle
     # them.
     if 'repeating_subfields' in f:
+        if f.get('singular'):
+            schema.setdefault('__before', []).append(validation.repeating_subfields_singular((*field_path, f['field_name'])))
         validators = {
-            sf['field_name']: _field_create_validators(sf, schema, False)
+            sf['field_name']: _field_create_validators(sf, schema, False, field_path=(*field_path, f['field_name']))
             for sf in f['repeating_subfields']
         }
 

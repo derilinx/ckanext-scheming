@@ -51,6 +51,11 @@ dataset_fields:
     - field_name: country
       required: true
 
+- field_name: singular
+  singular: true
+  repeating_subfields:
+  - field_name: id
+
 resource_fields:
 
 - field_name: url

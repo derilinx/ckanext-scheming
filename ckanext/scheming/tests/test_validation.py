@@ -1010,3 +1010,28 @@ class TestValidatorsFromString:
 
         result = validators_from_string("scheming_test_args('x',1,[None,()])", {}, {})
         assert result == [("x", 1, [None, ()])]
+
+
+@pytest.mark.usefixtures("clean_db")
+class TestSubfieldSingular(object):
+    def test_valid_subfields(self):
+        lc = LocalCKAN()
+        dataset = lc.action.package_create(
+            type="test-subfields",
+            name="nested_sf_1",
+            singular=[{'id': 1}]
+        )
+        assert dataset["singular"] == [{'id': 1}]
+
+    def test_invalid_subfields(self):
+        lc = LocalCKAN()
+        try:
+            dataset = lc.action.package_create(
+                type="test-subfields",
+                name="nested_sf_2",
+                singular=[{'id': 1}, {'id': 2}]
+            )
+        except ValidationError as e:
+            assert e.error_dict["singular"] == ["Too many values"]
+        else:
+            raise AssertionError("ValidationError not raised")
