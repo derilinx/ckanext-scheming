@@ -1,3 +1,5 @@
+{%- set trimmed_keys = h.remove_falsy_values(pkg_dict) | list -%}
+
 {% extends "package/snippets/additional_info.html" %}
 
 {%- set exclude_fields = [
@@ -10,10 +12,13 @@
     'owner_org',
     ] -%}
 
+
+
 {% block package_additional_info %}
   {%- for field in schema.dataset_fields -%}
     {%- if field.field_name not in exclude_fields
-        and field.display_snippet is not none -%}
+        and field.display_snippet is not none 
+        and  field.field_name in trimmed_keys -%}
       <tr>
         <th scope="row" class="dataset-label">{{
           h.scheming_language_text(field.label) }}</th>
