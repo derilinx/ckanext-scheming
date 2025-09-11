@@ -408,7 +408,7 @@ def expand_form_composite(data, schema):
         parent_data = data
         while len(parts) > 2:
             field, index, *parts = parts
-            if field not in fields[fieldpath]:
+            if field not in fields.get(fieldpath, set()):
                 parts = (field, index, *parts)
                 break
             fieldpath = (*fieldpath, field)
