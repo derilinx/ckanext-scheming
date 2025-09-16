@@ -24,7 +24,10 @@ def helper(fn):
 def lang():
     # access this function late in case ckan
     # is not set up fully when importing this module
-    return h.lang()
+    try:
+        return h.lang()
+    except RuntimeError:
+        return config.get('ckan.locale_default')
 
 
 @helper
