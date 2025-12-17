@@ -2,10 +2,22 @@
 
 {%- set exclude_fields = [
   'name',
+  'title',
+  'name_translated',
   'description',
   'url',
   'format',
   ] -%}
+
+
+{%- set exclude_dataset_fields = [
+  'id',
+  'name',
+  'title',
+  'notes',
+  'tag_string',
+  'owner_org'
+] -%}
 {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
 
 {% block resource_additional_information_inner %}
@@ -27,60 +39,153 @@
         </thead>
       {%- endblock -%}
       <tbody>
+
+        {%- block svk_dataset_attributes -%}
+         {%- for field in schema.dataset_fields -%}
+
+            {%- set raw_value = pkg_dict.get(field.field_name) -%}
+            {%- set has_value = false -%}
+
+            {%- if raw_value is mapping or raw_value is string -%}
+              {%- if h.scheming_language_text(raw_value) -%}
+                {%- set has_value = true -%}
+              {%- endif -%}
+
+            {%- elif raw_value is sequence and raw_value is not string -%}
+              {%- if raw_value | length > 0 -%}
+                {%- set has_value = true -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- if field.field_name not in exclude_dataset_fields
+                  and field.display_snippet is not none
+                  and has_value -%}
+
+              <tr>
+                <th scope="row" class="dataset-label">
+                  {{ h.scheming_language_text(field.label) }}
+                </th>
+
+                <td class="dataset-details"
+                    {% if field.display_property %}
+                      property="{{ field.display_property }}"
+                    {% endif %}>
+                  {%- snippet 'scheming/snippets/display_field.html',
+                      field=field,
+                      data=pkg_dict,
+                      schema=schema,
+                      entity_type='dataset',
+                      object_type=dataset_type
+                  -%}
+                </td>
+              </tr>
+
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endblock -%}
+
+        {%- block resource_title -%}
+        {% set lang = h.lang() %}
+        {% set title_value = res.name_translated.get(lang) or res.name_translated.get('en') %}
+        {% if title_value %}
+        <tr>
+          <th scope="row">{{ _('Resource Title') }}</th>
+          <td>{{ title_value }}</td>
+        </tr>
+        {% endif %}
+        {%- endblock -%}
+
         {%- block resource_last_updated -%}
+        {% if res.last_modified or res.created %}
         <tr>
           <th scope="row">{{ _('Data last updated') }}</th>
-          <td>{{ h.render_datetime(res.last_modified) or h.render_datetime(res.created) or _('unknown') }}</td>
+          <td>{{ h.render_datetime(res.last_modified) or h.render_datetime(res.created) }}</td>
         </tr>
+        {% endif %}
         {%- endblock -%}
+
         {%- block resource_metadata_last_updated -%}
+        {% if res.metadata_modified or res.created %}
         <tr>
           <th scope="row">{{ _('Metadata last updated') }}</th>
-          <td>{{ h.render_datetime(res.metadata_modified) or h.render_datetime(res.created) or _('unknown') }}</td>
+          <td>{{ h.render_datetime(res.metadata_modified) or h.render_datetime(res.created) }}</td>
         </tr>
+        {% endif %}
         {%- endblock -%}
+
         {%- block resource_created -%}
+        {% if res.created %}
         <tr>
           <th scope="row">{{ _('Created') }}</th>
-          <td>{{ h.render_datetime(res.created) or h.render_datetime(res.Created) or ('unknown') }}</td>
+          <td>{{ h.render_datetime(res.created) }}</td>
         </tr>
+        {% endif %}
         {%- endblock -%}
+
         {%- block resource_format -%}
+        {% set format_value = res.format or res.mimetype_inner or res.mimetype %}
+        {% if format_value %}
         <tr>
           <th scope="row">{{ _('Format') }}</th>
-          <td>{{ res.format or res.mimetype_inner or res.mimetype or _('unknown') }}</td>
+          <td>{{ format_value }}</td>
         </tr>
+        {% endif %}
         {%- endblock -%}
+
         {%- block resource_license -%}
+        {% if pkg %}
         <tr>
           <th scope="row">{{ _('License') }}</th>
           <td>{% snippet "snippets/license.html", pkg_dict=pkg, text_only=True %}</td>
         </tr>
+        {% endif %}
         {%- endblock -%}
-        {%- block resource_fields -%}
-          {%- for field in schema.resource_fields -%}
-            {%- if field.field_name not in exclude_fields
-                and field.display_snippet is not none -%}
-              <tr>
-                <th scope="row">
-                  {{- h.scheming_language_text(field.label) -}}
-                </th>
-                <td>
-                  {%- snippet 'scheming/snippets/display_field.html',
-                      field=field, data=res, entity_type='dataset',
-                      object_type=dataset_type -%}
-                </td>
-              </tr>
-            {%- endif -%}
-          {%- endfor -%}
-        {%- endblock -%}
-        {%- block resource_more_items -%}
-          {% for key, value in h.format_resource_items(res.items()) %}
-            {% if key not in ('created', 'metadata modified', 'last modified', 'format') %}
-              <tr class="toggle-more"><th scope="row">{{ key | capitalize }}</th><td>{{ value }}</td></tr>
-            {% endif %}
-          {% endfor %}
-        {%- endblock -%}
+
+{%- block resource_fields -%}
+  {%- for field in schema.resource_fields -%}
+    {%- set value = res.get(field.field_name) %}
+    {%- set show = false %}
+    {%- if value is string %}
+      {%- if value|trim != '' %}{%- set show = true %}{%- endif %}
+    {%- elif value is iterable %}
+      {%- if value|length > 0 %}{%- set show = true %}{%- endif %}
+    {%- elif value is mapping %}
+      {%- if value|dictsort|length > 0 %}{%- set show = true %}{%- endif %}
+    {%- elif value is not none %}
+      {%- set show = true %}
+    {%- endif %}
+    {%- if field.field_name not in exclude_fields
+          and field.display_snippet is not none
+          and show -%}
+      <tr>
+        <th scope="row">{{- h.scheming_language_text(field.label) -}}</th>
+        <td>
+          {%- snippet 'scheming/snippets/display_field.html',
+              field=field, data=res, entity_type='dataset',
+              object_type=dataset_type -%}
+        </td>
+      </tr>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endblock -%}
+
+{%- block resource_more_items -%}
+  {% for key, value in h.format_resource_items(res.items()) %}
+    {% set show = false %}
+    {% if value is string %}
+      {% if value|trim != '' %}{% set show = true %}{% endif %}
+    {% elif value is iterable %}
+      {% if value|length > 0 %}{% set show = true %}{% endif %}
+    {% elif value is mapping %}
+      {% if value|dictsort|length > 0 %}{% set show = true %}{% endif %}
+    {% elif value is not none %}
+      {% set show = true %}
+    {% endif %}
+    {% if key not in ('created', 'metadata modified', 'last modified', 'format') and show %}
+      <tr class="toggle-more"><th scope="row">{{ key | capitalize }}</th><td>{{ value }}</td></tr>
+    {% endif %}
+  {% endfor %}
+{%- endblock -%}
       </tbody>
     </table>
 
