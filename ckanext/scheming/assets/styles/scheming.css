@@ -58,4 +58,8 @@ fieldset.checkboxes label input {
 
 .d-none-soft{
   display: none;
+
+.content-wrap {
+  padding-left:15px;
+  padding-right: 15px;
 }
