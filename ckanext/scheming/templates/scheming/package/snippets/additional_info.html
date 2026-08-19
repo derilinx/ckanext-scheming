@@ -28,6 +28,20 @@ set exclude_fields = [
       </tr>
     {%- endif -%}
   {%- endfor -%}
+{% if pkg_dict.qa.openness_score %}
+    <tr>
+        <th scope="row" class="dataset-label">{{
+          _('Openness') }}</th>
+        <td class="dataset-details" property="">
+            {% for _ in range(pkg_dict.qa.openness_score) %}
+            <i class="fa fa-star" aria-hidden="true"></i>
+            {% endfor %}
+            {% for _ in range(5 - pkg_dict.qa.openness_score) %}
+            <i class="fa-regular fa-star" aria-hidden="true"></i>
+            {% endfor %}
+           </td>
+      </tr>
+{% endif %}
   {% if h.check_access('package_update',{'id':pkg_dict.id}) %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("State") }}</th>
