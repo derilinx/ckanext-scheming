@@ -1,6 +1,11 @@
 {%- set values = data[field.field_name] -%}
-<ol>
-{%- for element in values -%}
-  <li>{{ element }}</li>
-{%- endfor -%}
-</ol>
+
+{% if values.__class__.__name__ == 'list' %}
+  <ol>
+  {%- for element in values -%}
+    <li>{{ element }}</li>
+  {%- endfor -%}
+  </ol>
+{% else %}
+  {{ values }}
+{% endif %}
