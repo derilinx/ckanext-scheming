@@ -166,7 +166,10 @@ def scheming_multiple_choice(field, schema):
                 if v in selected
             ])
 
-            if field.get('required') and not selected:
+            state = data.get(('state',), missing)
+            really_required = schema.get('draft_fields_required', True
+                ) or not (state is missing or state.startswith('draft'))
+            if not selected and field.get('required') and really_required:
                 errors[key].append(_('Select at least one'))
 
     return validator
@@ -238,7 +241,7 @@ def scheming_isodatetime(field, schema):
                 return value
             else:
                 try:
-                    date = h.date_str_to_datetime(value)
+                    date = datetime.datetime.fromisoformat(value)
                 except (TypeError, ValueError) as e:
                     raise Invalid(_('Date format incorrect'))
         else:
